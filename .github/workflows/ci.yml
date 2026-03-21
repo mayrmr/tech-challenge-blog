@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências do backend
+        working-directory: ./backend
+        run: npm install
+
+      - name: Instalar dependências do frontend
+        working-directory: ./frontend-react
+        run: npm install
+
+      - name: Build do frontend
+        working-directory: ./frontend-react
+        run: npm run build
