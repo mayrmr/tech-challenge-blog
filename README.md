@@ -12,8 +12,8 @@
 
 ## Como executar
 
-### Backend
 ```bash
+### Backend
 cd backend
 npm install
 npm run dev
