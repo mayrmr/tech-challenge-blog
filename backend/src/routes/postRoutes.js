@@ -13,8 +13,8 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const professorMiddleware = require("../middlewares/professorMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
 
-router.get("/", authMiddleware, listarPosts);
-router.get("/:id", authMiddleware, buscarPostPorId);
+router.get("/", listarPosts);
+router.get("/:id", buscarPostPorId);
 
 router.post(
   "/",
