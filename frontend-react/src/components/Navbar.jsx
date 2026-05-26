@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import userIcon from "../assets/user-icon.png";
+import logoSchool from "../assets/logo-school.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -20,10 +22,10 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar-left" onClick={() => navigate("/")}>
-        <div className="navbar-logo">📚</div>
+        <img src={logoSchool} alt="Logo School" className="navbar-logo-img" />
         <div>
-          <h1 className="navbar-title">Tech Challenge Blog</h1>
-          <p className="navbar-subtitle">Sistema de posts</p>
+          <h1 className="navbar-title">Escola Tech</h1>
+          <p className="navbar-subtitle">Tech Challenge - Fase 03</p>
         </div>
       </div>
 
@@ -31,7 +33,7 @@ export default function Navbar() {
         {user ? (
           <>
             <div className="user-box">
-              <span className="user-icon">👤</span>
+              <img src={userIcon} alt="Ícone do usuário" className="user-avatar" />
               <span>{user.nome}</span>
             </div>
 
@@ -41,7 +43,7 @@ export default function Navbar() {
           </>
         ) : (
           <div className="user-box">
-            <span className="user-icon">👤</span>
+            <img src={userIcon} alt="Ícone do usuário" className="user-avatar" />
             <span>Visitante</span>
           </div>
         )}

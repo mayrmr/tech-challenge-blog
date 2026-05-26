@@ -5,6 +5,13 @@ import Navbar from "../components/Navbar";
 
 export default function PostDetalhe() {
   const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [novoComentario, setNovoComentario] = useState("");
+  const [comentarioEditando, setComentarioEditando] = useState(null);
+  const [textoEditando, setTextoEditando] = useState("");
+  const [menuAberto, setMenuAberto] = useState(null);
+  
+
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -15,6 +22,17 @@ export default function PostDetalhe() {
   } catch (error) {
     user = null;
   }
+
+  const usuarioId =
+    user?._id ||
+    user?.id ||
+    user?.usuarioId ||
+    user?.userId ||
+    user?.email ||
+    user?.nome ||
+    user?.name;
+
+  const nomeUsuario = user?.nome || user?.name || user?.email || "Usuário";
 
   function formatarData(data) {
     return new Date(data).toLocaleDateString("pt-BR", {
@@ -34,6 +52,16 @@ export default function PostDetalhe() {
     }
   }
 
+  async function carregarComentarios() {
+    try {
+      const response = await api.get(`/posts/${id}/comments`);
+      setComments(response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao carregar comentários");
+    }
+  }
+
   async function excluirPost() {
     const confirmar = window.confirm("Deseja realmente excluir este post?");
     if (!confirmar) return;
@@ -47,8 +75,169 @@ export default function PostDetalhe() {
     }
   }
 
+  async function curtirPost() {
+    if (!usuarioId) {
+      alert("Você precisa estar logado para curtir.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/posts/${id}/like`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          usuarioId: String(usuarioId),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || "Erro ao curtir post");
+      }
+
+      setPost(data);
+    } catch (error) {
+      console.error("ERRO AO CURTIR POST:", error);
+      alert(error.message || "Erro ao curtir post");
+    }
+  }
+
+  async function criarComentario(e) {
+    e.preventDefault();
+
+    if (!usuarioId) {
+      alert("Você precisa estar logado para comentar.");
+      return;
+    }
+
+    if (!novoComentario.trim()) {
+      alert("Digite um comentário.");
+      return;
+    }
+
+    try {
+      await api.post(`/posts/${id}/comments`, {
+        texto: novoComentario,
+        autor: nomeUsuario,
+        usuarioId,
+      });
+
+      setNovoComentario("");
+      carregarComentarios();
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao criar comentário");
+    }
+  }
+
+  function iniciarEdicaoComentario(comment) {
+    setComentarioEditando(comment._id);
+    setTextoEditando(comment.texto);
+    setMenuAberto(null);
+  }
+
+  function cancelarEdicaoComentario() {
+    setComentarioEditando(null);
+    setTextoEditando("");
+  }
+
+  async function salvarEdicaoComentario(commentId) {
+    if (!textoEditando.trim()) {
+      alert("O comentário não pode ficar vazio.");
+      return;
+    }
+
+    try {
+      await api.put(`/comments/${commentId}`, {
+        texto: textoEditando,
+        usuarioId,
+        perfil: user?.perfil,
+      });
+
+      setComentarioEditando(null);
+      setTextoEditando("");
+      carregarComentarios();
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao editar comentário");
+    }
+  }
+
+  async function excluirComentario(commentId) {
+    const confirmar = window.confirm("Deseja realmente excluir este comentário?");
+    if (!confirmar) return;
+
+    try {
+      await api.delete(`/comments/${commentId}`, {
+        data: {
+          usuarioId,
+          perfil: user?.perfil,
+        },
+      });
+
+      setMenuAberto(null);
+      carregarComentarios();
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao excluir comentário");
+    }
+  }
+
+  async function curtirComentario(commentId) {
+    if (!usuarioId) {
+      alert("Você precisa estar logado para curtir.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/comments/${commentId}/like`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          usuarioId: String(usuarioId),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || "Erro ao curtir comentário");
+      }
+
+      carregarComentarios();
+    } catch (error) {
+      console.error("ERRO AO CURTIR COMENTÁRIO:", error);
+      alert(error.message || "Erro ao curtir comentário");
+    }
+  }
+
+  function usuarioCurtiuPost() {
+    return post?.likes?.some(
+      (likeId) => String(likeId) === String(usuarioId)
+    );
+  }
+
+  function usuarioCurtiuComentario(comment) {
+    return comment?.likes?.some(
+      (likeId) => String(likeId) === String(usuarioId)
+    );
+  }
+
+  function podeEditarOuExcluirComentario(comment) {
+    const isOwner = String(comment.usuarioId) === String(usuarioId);
+    const isProfessor = user?.perfil === "professor";
+
+    return isOwner || isProfessor;
+  }
+
   useEffect(() => {
     carregarPost();
+    carregarComentarios();
   }, [id]);
 
   if (!post) {
@@ -93,9 +282,17 @@ export default function PostDetalhe() {
             </div>
           )}
 
-          <div className="post-actions">
+          <div className="post-like-count">
+            {post.likes?.length || 0} curtida(s)
+          </div>
+
+          <div className="post-actions post-actions-detail">
             <button className="btn btn-secondary" onClick={() => navigate("/")}>
-              Voltar para home
+              Voltar
+            </button>
+
+            <button className="btn btn-like" onClick={curtirPost}>
+              {usuarioCurtiuPost() ? "Curtido" : "Curtir"}
             </button>
 
             {user?.perfil === "professor" && (
@@ -112,6 +309,114 @@ export default function PostDetalhe() {
                 </button>
               </>
             )}
+          </div>
+        </div>
+
+        <div className="card comments-card">
+          <h2 className="comments-title">Comentários</h2>
+
+          <form className="comment-form" onSubmit={criarComentario}>
+            <textarea
+              value={novoComentario}
+              onChange={(e) => setNovoComentario(e.target.value)}
+              placeholder="Escreva um comentário..."
+            />
+
+            <button className="btn btn-primary btn-comment-submit" type="submit">
+              Enviar comentário
+            </button>
+          </form>
+
+          <div className="comments-list">
+            {comments.length === 0 && (
+              <p className="empty-state">Nenhum comentário ainda.</p>
+            )}
+
+            {comments.map((comment) => (
+              <div className="comment-item" key={comment._id}>
+                <div className="comment-top">
+                  <div className="comment-header">
+                    <strong>{comment.autor}</strong>
+                    <span>{formatarData(comment.createdAt)}</span>
+                  </div>
+
+                  {podeEditarOuExcluirComentario(comment) && (
+                    <div className="comment-menu-wrapper">
+                      <button
+                        className="comment-menu-button"
+                        type="button"
+                        onClick={() =>
+                          setMenuAberto(menuAberto === comment._id ? null : comment._id)
+                        }
+                      >
+                        ⋯
+                      </button>
+
+                      {menuAberto === comment._id && (
+                        <div className="comment-menu">
+                          <button
+                            type="button"
+                            onClick={() => iniciarEdicaoComentario(comment)}
+                          >
+                            Editar
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => excluirComentario(comment._id)}
+                          >
+                            Excluir
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {comentarioEditando === comment._id ? (
+                  <div className="comment-edit-area">
+                    <textarea
+                      value={textoEditando}
+                      onChange={(e) => setTextoEditando(e.target.value)}
+                    />
+
+                    <div className="comment-actions">
+                      <button
+                        className="btn btn-primary"
+                        type="button"
+                        onClick={() => salvarEdicaoComentario(comment._id)}
+                      >
+                        Salvar
+                      </button>
+
+                      <button
+                        className="btn btn-secondary"
+                        type="button"
+                        onClick={cancelarEdicaoComentario}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="comment-text">{comment.texto}</p>
+                )}
+
+                <div className="comment-like-row">
+                  <button
+                    className="btn btn-like"
+                    type="button"
+                    onClick={() => curtirComentario(comment._id)}
+                  >
+                    {usuarioCurtiuComentario(comment) ? "Curtido" : "Curtir"}
+                  </button>
+
+                  <span className="like-count">
+                    {comment.likes?.length || 0} curtida(s)
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -36,7 +36,7 @@ export default function Login() {
 	  <div className="auth-card">
 	    <h1>Entrar</h1>
             <p className="page-subtitle">
-              Entre para acessar os posts e gerenciar o conteúdo.
+              Mantenha-se atualizado(a): acesse sua conta para visualizar os conteúdos.
             </p>
 
             <form onSubmit={handleLogin}>

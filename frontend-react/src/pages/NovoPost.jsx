@@ -36,9 +36,9 @@ export default function NovoPost() {
 	<Navbar />
 
         <div className="card form-card">
-          <h1 className="page-title">Novo Post</h1>
+          <h1 className="page-title">Criar Post</h1>
           <p className="page-subtitle">
-            Preencha os dados abaixo para publicar um novo conteúdo.
+            Preencha os campos abaixo para publicar um novo conteúdo.
           </p>
 
           <form onSubmit={handleSubmit}>
@@ -61,9 +61,9 @@ export default function NovoPost() {
             </div>
 
             <div className="form-group">
-              <label>Autor</label>
+              <label>Autor(a)</label>
               <input
-                placeholder="Digite o nome do autor"
+                placeholder="Digite o nome do(a) autor(a)"
                 value={autor}
                 onChange={(e) => setAutor(e.target.value)}
               />
@@ -72,7 +72,7 @@ export default function NovoPost() {
             <div className="form-group">
               <label>Anexo</label>
               <input type="file" onChange={(e) => setArquivo(e.target.files[0])} />
-              <p className="helper-text">Você pode enviar um arquivo opcional.</p>
+              <p className="helper-text">Você pode enviar um arquivo (opcional).</p>
             </div>
 
             <div className="post-actions">
