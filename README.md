@@ -48,17 +48,7 @@ cd frontend-mobile
 npm install
 ```
 
-Configuração da URL da API: edite `frontend-mobile/.env` (`EXPO_PUBLIC_API_URL`) se não for usar o padrão `http://localhost:3000`. Valores comuns:
-
-| Ambiente | Valor de `EXPO_PUBLIC_API_URL` |
-| --- | --- |
-| Simulador iOS / `expo start --web` | `http://localhost:3000` |
-| Emulador Android | `http://10.0.2.2:3000` |
-| Dispositivo físico (Expo Go) | `http://<IP-da-sua-máquina-na-rede>:3000` |
-
-Depois de editar `.env`, reinicie o Metro para o valor ser recarregado.
-
-**Formas de abrir**:
+**Acesso**:
 
 | Comando | O que faz | Quando usar |
 | --- | --- | --- |
