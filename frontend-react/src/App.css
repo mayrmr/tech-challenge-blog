@@ -95,17 +95,27 @@ textarea {
   padding: 32px;
 }
 
-.auth-card h1,
-.page-title {
+.auth-card .page-subtitle {
+  text-align: center;
+}
+
+.auth-card h1 {
   margin: 0 0 10px;
   text-align: center;
   color: var(--green);
   font-weight: 800;
 }
 
+.page-title {
+  margin: 0 0 10px;
+  text-align: left;
+  color: var(--green);
+  font-weight: 800;
+}
+
 .page-subtitle {
   margin: 0 0 24px;
-  text-align: center;
+  text-align: left;
   color: var(--muted);
 }
 
@@ -266,6 +276,67 @@ textarea {
   border: 1px solid var(--border);
   border-radius: 14px;
   color: var(--text);
+}
+
+.filter-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filter-chip {
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.filter-chip:hover {
+  background: var(--pink-light);
+}
+
+.filter-chip-active,
+.filter-chip-active:hover {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.user-row .post-title {
+  margin-bottom: 4px;
+}
+
+.user-row .post-meta {
+  margin-bottom: 6px;
+}
+
+.user-badge {
+  display: inline-block;
+  background: var(--green-light);
+  color: var(--green);
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 10px;
 }
 
 .navbar {

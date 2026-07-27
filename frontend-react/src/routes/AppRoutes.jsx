@@ -4,7 +4,8 @@ import Home from "../pages/Home";
 import NovoPost from "../pages/NovoPost";
 import EditarPost from "../pages/EditarPost";
 import PostDetalhe from "../pages/PostDetalhe";
-import Cadastro from "../pages/Cadastro";
+import Usuarios from "../pages/Usuarios";
+import UsuarioForm from "../pages/UsuarioForm";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -16,12 +17,33 @@ function PrivateRoute({ children }) {
   return children;
 }
 
+function ProfessorRoute({ children }) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return <Navigate to="/login" />;
+  }
+
+  let user = null;
+
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch {
+    user = null;
+  }
+
+  if (user?.perfil !== "professor") {
+    return <Navigate to="/" />;
+  }
+
+  return children;
+}
+
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-	<Route path="/cadastro" element={<Cadastro />} />
 
         <Route
           path="/"
@@ -58,6 +80,33 @@ export default function AppRoutes() {
             </PrivateRoute>
           }
         />
+
+	<Route
+	  path="/usuarios"
+	  element={
+	    <ProfessorRoute>
+	      <Usuarios />
+	    </ProfessorRoute>
+	  }
+	/>
+
+	<Route
+	  path="/usuarios/novo"
+	  element={
+	    <ProfessorRoute>
+	      <UsuarioForm />
+	    </ProfessorRoute>
+	  }
+	/>
+
+	<Route
+	  path="/usuarios/:id/editar"
+	  element={
+	    <ProfessorRoute>
+	      <UsuarioForm />
+	    </ProfessorRoute>
+	  }
+	/>
       </Routes>
     </BrowserRouter>
   );

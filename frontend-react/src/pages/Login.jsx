@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 
@@ -23,7 +23,8 @@ export default function Login() {
       navigate("/");
     } catch (error) {
       console.error(error);
-      alert("Erro no login");
+      const mensagem = error?.response?.data?.erro || "Erro no login";
+      alert(mensagem);
     }
   }
 
@@ -66,7 +67,8 @@ export default function Login() {
             </form>
 
 	    <p className="auto-switch">
-	      Ainda não tem conta? <Link to ="/cadastro">Cadastre-se</Link>
+	      Cadastros de alunos e professores são feitos por um(a)
+	      professor(a) já autenticado(a), dentro do sistema.
 	    </p>
           </div>
         </div>

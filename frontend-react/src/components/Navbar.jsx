@@ -32,6 +32,18 @@ export default function Navbar() {
       <div className="navbar-right">
         {user ? (
           <>
+            {user.perfil === "professor" && (
+              <>
+                <button className="btn btn-secondary" onClick={() => navigate("/")}>
+                  Publicações
+                </button>
+
+                <button className="btn btn-secondary" onClick={() => navigate("/usuarios")}>
+                  Usuários
+                </button>
+              </>
+            )}
+
             <div className="user-box">
               <img src={userIcon} alt="Ícone do usuário" className="user-avatar" />
               <span>{user.nome}</span>

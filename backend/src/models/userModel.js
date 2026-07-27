@@ -9,6 +9,14 @@ const userSchema = new mongoose.Schema({
     enum: ["professor", "aluno"],
     default: "aluno",
   },
-}, { timestamps: true });
+}, {
+  timestamps: true,
+  toJSON: {
+    transform: (_doc, ret) => {
+      delete ret.senha;
+      return ret;
+    },
+  },
+});
 
 module.exports = mongoose.model("User", userSchema);
